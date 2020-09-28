@@ -38,24 +38,25 @@ with ff.start("https://twitter.com/shiroihamusan") as driver:
             ff.scroll(driver, tweets[i])
 
         tweet = tweets[i]
-        date = datetime.fromisoformat(tweet.find_element_by_tag_name('time').get_attribute('datetime')[:-1])
-        key = tweet.find_element_by_xpath('.//time/..').get_attribute('href')
-        if key not in visited:
-            visited[key] = True
+        try:
+            date = datetime.fromisoformat(tweet.find_element_by_tag_name('time').get_attribute('datetime')[:-1])
+            key = tweet.find_element_by_xpath('.//time/..').get_attribute('href')
+            if key not in visited:
+                visited[key] = True
 
-            if (datetime.utcnow() - date).total_seconds() / 60 / 60 < 18:
-                els = tweet.find_elements_by_xpath(".//div[@data-testid='like']")
-                if len(els) > 0:
-                    likes = els[0]
-                    likes_count = 9999
-                    try:
-                        likes_count = int(likes.get_attribute('innerText'))
-                    except: pass
-                    if likes_count > 100:
-                        like_and_retweet(tweet)
-                        count += 1
-                        last = len(visited)
-
+                if (datetime.utcnow() - date).total_seconds() / 60 / 60 < 18:
+                    els = tweet.find_elements_by_xpath(".//div[@data-testid='like']")
+                    if len(els) > 0:
+                        likes = els[0]
+                        likes_count = 9999
+                        try:
+                            likes_count = int(likes.get_attribute('innerText'))
+                        except: pass
+                        if likes_count > 100:
+                            like_and_retweet(tweet)
+                            count += 1
+                            last = len(visited)
+        except: pass
         html.send_keys(Keys.PAGE_DOWN)
         i += 1
         if len(visited) > 50 or count >= 20: break
