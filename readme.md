@@ -4,4 +4,4 @@
 1. Extract Gecko Driver at current directory
 1. Install FireFox Portable in the subdirectory .\ff
 1. Run `pip install -r requirements.txt`
-1. (Optional) Start FireFox portable and login to your twitter account
+1. (Optional) Start FireFox portable and login to your twitter account if you are using `retweet.py`
