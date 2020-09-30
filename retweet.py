@@ -1,62 +1,89 @@
-from selenium.webdriver.common.keys import Keys
 import time
 from datetime import datetime
 import pickle
 import os
 import ff
 
-def like_and_retweet(tweet):
-    ff.scroll(driver, tweet)
-    els = tweet.find_elements_by_xpath(".//div[@data-testid='retweet']")
-    if len(els) > 0:
-        retweet = els[0]
-        ff.click_and_wait(retweet, 0.5)
-        ff.click_and_wait(driver.find_element_by_xpath("//div[@data-testid='retweetConfirm']"), 0.5)
-        ff.click_and_wait(likes, 2)
+class Tweet():
+    def __init__(self, tweet):
+        self.element = tweet
+        self.time = datetime.fromisoformat(tweet.find_element_by_tag_name('time').get_attribute('datetime')[:-1])
+        self.url = tweet.find_element_by_xpath('.//time/..').get_attribute('href')
+        self.liked = len(tweet.find_elements_by_xpath(".//div[@data-testid='like']")) == 0
+        self.like_button = None
+        self.retweet_button = None
 
-        html.send_keys(Keys.PAGE_DOWN)
-        try: ff.scroll(driver, tweet)
-        except: pass
+        if not self.liked:
+            self.like_button = tweet.find_element_by_xpath(".//div[@data-testid='like']")
+            self.retweet_button = tweet.find_element_by_xpath(".//div[@data-testid='retweet']")
 
-with ff.start("https://twitter.com/shiroihamusan") as driver:
+            self.likes = self.like_button.get_attribute('innerText')
+            try:
+                self.likes = int(self.likes)
+            except: pass
 
-    time.sleep(5)
-    html = driver.find_element_by_tag_name("html")
-    tweets = driver.find_elements_by_xpath("//div[@data-testid='tweet']")
+    def has_many_likes(self):
+        return not self.liked and (type(self.likes) == str or self.likes > 100)
 
-    count = 0
-    last = 0
-    visited = {}
-    i = 0
-    while True:
+class TwitterBrowser(ff.Browser):
+    def like_and_retweet(self, tweet):
+        if not self.is_element_visible_in_viewpoint(tweet.retweet_button):
+            self.scroll_to_element(tweet)
+        self.click_and_wait(tweet.retweet_button, 0.5)
+        self.confirm_retween()
+        self.click_and_wait(tweet.like_button, 2)
 
-        time.sleep(1)
-        tweets = driver.find_elements_by_xpath("//div[@data-testid='tweet']")
+    def confirm_retween(self):
+        self.click_and_wait(self.driver.find_element_by_xpath("//div[@data-testid='retweetConfirm']"), 0.5)
 
-        if len(tweets) <= i:
-            i = 0
-            ff.scroll(driver, tweets[i])
+    def get_tweets(self):
+        return [Tweet(tweet) for tweet in self.driver.find_elements_by_xpath("//div[@data-testid='tweet']")]
 
-        tweet = tweets[i]
-        try:
-            date = datetime.fromisoformat(tweet.find_element_by_tag_name('time').get_attribute('datetime')[:-1])
-            key = tweet.find_element_by_xpath('.//time/..').get_attribute('href')
+if __name__ == "__main__":
+    with TwitterBrowser("https://twitter.com/shiroihamusan") as browser:
+        time.sleep(5)
+        tweets = browser.get_tweets()
+
+        tweeted = 0
+        visited = {}
+        prev_first_tweet = None
+        prev_tweet = None
+        i = 0
+        while True:
+            tweets = browser.get_tweets()
+
+            # tweets got refreshed... find the next tweet
+            if prev_first_tweet != tweets[0].url:
+                prev_first_tweet = tweets[0].url
+                for i, t in enumerate(tweets):
+                    if tweets[i].url == prev_tweet:
+                        break
+
+                if i + 1 == len(tweets):
+                    i = 0
+                else:
+                    i += 1
+                browser.scroll_to_element(tweets[i].element)
+
+            tweet = tweets[i]
+            prev_tweet = tweet.url
+
+            for i in range(2):
+                if browser.is_element_visible_in_viewpoint(tweet.retweet_button): break
+                browser.page_down()
+
+            key = tweet.url
             if key not in visited:
                 visited[key] = True
 
-                if (datetime.utcnow() - date).total_seconds() / 60 / 60 < 18:
-                    els = tweet.find_elements_by_xpath(".//div[@data-testid='like']")
-                    if len(els) > 0:
-                        likes = els[0]
-                        likes_count = 9999
-                        try:
-                            likes_count = int(likes.get_attribute('innerText'))
-                        except: pass
-                        if likes_count > 100:
-                            like_and_retweet(tweet)
-                            count += 1
-                            last = len(visited)
-        except: pass
-        html.send_keys(Keys.PAGE_DOWN)
-        i += 1
-        if len(visited) > 50 or count >= 20: break
+                # retweet those with less than 18 hours
+                if (datetime.utcnow() - tweet.time).total_seconds() / 60 / 60 < 18:                    
+                    if not tweet.liked and tweet.has_many_likes():
+                        browser.like_and_retweet(tweet)
+                        tweeted += 1
+
+            i += 1
+            if len(visited) > 50 or tweeted >= 20: break
+            time.sleep(1)
+
+        time.sleep(60)

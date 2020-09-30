@@ -7,7 +7,7 @@ import ff
 sys.stdout.reconfigure(encoding='utf-8')
 r = re.compile(r"\/@([\d\.]+),([\d\.]+),([\d]+)z\/")
 
-def get_long_lat_zoom(address):
+def get_long_lat_zoom(driver, address):
     address = address.strip()
     elem = driver.find_element_by_id("searchboxinput")
     elem.clear()
@@ -23,9 +23,9 @@ def get_long_lat_zoom(address):
     return address, matches.group(1), matches.group(2), matches.group(3)
 
 if __name__ == "__main__":
-    with ff("http://maps.google.com", private=True) as driver:
+    with ff.Browser("http://maps.google.com", private=True) as browser:
         with open("places.txt", newline="", encoding="utf-8") as f:
             for line in f:
-                address, long, lat, zoom = get_long_lat_zoom(line)
+                address, long, lat, zoom = get_long_lat_zoom(browser.driver, line)
                 print(f"{address}\t{long}\t{lat}\t{zoom}")
                 time.sleep(1)
