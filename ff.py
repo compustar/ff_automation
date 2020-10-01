@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from selenium.webdriver.firefox.options import Options
 import random
 import time
 
@@ -11,10 +12,14 @@ class Browser:
         firefox_profile = webdriver.FirefoxProfile(r"ff\Data\profile")
         if private:
             firefox_profile.set_preference("browser.privatebrowsing.autostart", True)
-        binary = FirefoxBinary(r"ff\App\Firefox64\firefox.exe")
+
+        options = Options()
         if headless:
-            binary.add_command_line_options('-headless')
-        self.driver = webdriver.Firefox(firefox_profile = firefox_profile, firefox_binary=binary)
+            options.headless = True
+
+        binary = FirefoxBinary(r"ff\App\Firefox64\firefox.exe")
+
+        self.driver = webdriver.Firefox(firefox_profile = firefox_profile, firefox_binary=binary, firefox_options=options)
         if url is not None:
             self.driver.get(url)
 

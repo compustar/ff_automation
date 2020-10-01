@@ -14,7 +14,7 @@ parser.add_argument('--headless', action='store_true', default=False)
 
 args = parser.parse_args()
 
-with Browser("https://web.telegram.org/#/im?p=@TwitterHelpBot") as browser:
+with Browser("https://web.telegram.org/#/im?p=@TwitterHelpBot", headless=args.headless) as browser:
     browser.wait(By.CLASS_NAME, "composer_rich_textarea")
     time.sleep(5)
     input = browser.driver.find_element_by_class_name("composer_rich_textarea")
