@@ -5,11 +5,13 @@ import random
 import time
 
 class Browser:
-    def __init__(self, url, private=False):
+    def __init__(self, url, private=False, headless=False):
         firefox_profile = webdriver.FirefoxProfile(r"ff\Data\profile")
         if private:
             firefox_profile.set_preference("browser.privatebrowsing.autostart", True)
         binary = FirefoxBinary(r"ff\App\Firefox64\firefox.exe")
+        if headless:
+            binary.add_command_line_options('-headless')
         self.driver = webdriver.Firefox(firefox_profile = firefox_profile, firefox_binary=binary)
         self.driver.get(url)
 
@@ -19,9 +21,9 @@ class Browser:
     def __exit__(self, type, value, traceback):
         self.driver.quit()
 
-    def scroll_to_element(self, element):
+    def scroll_to_element(self, element, offset=-150):
         if element is not None:
-            self.driver.execute_script("arguments[0].scrollIntoView();", element)
+            self.driver.execute_script(f"arguments[0].scrollIntoView;window.scrollBy(0, {offset});", element)
 
     def click_and_wait(self, el, delay=1):
         el.click()
