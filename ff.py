@@ -1,11 +1,13 @@
 from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 import random
 import time
 
 class Browser:
-    def __init__(self, url, private=False, headless=False):
+    def __init__(self, url=None, private=False, headless=False):
         firefox_profile = webdriver.FirefoxProfile(r"ff\Data\profile")
         if private:
             firefox_profile.set_preference("browser.privatebrowsing.autostart", True)
@@ -13,7 +15,8 @@ class Browser:
         if headless:
             binary.add_command_line_options('-headless')
         self.driver = webdriver.Firefox(firefox_profile = firefox_profile, firefox_binary=binary)
-        self.driver.get(url)
+        if url is not None:
+            self.driver.get(url)
 
     def __enter__(self):
         return self
@@ -49,3 +52,8 @@ class Browser:
                                     "}                                        " 
                                     "return false;                            "
                                     , element)
+
+    def wait(self, by, p):
+        return WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((by, p))
+        )
