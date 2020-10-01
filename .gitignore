@@ -1,4 +1,4 @@
 ff/
 geckodriver.*
-.vscode/settings.json
+.vscode/
 __pycache__/
