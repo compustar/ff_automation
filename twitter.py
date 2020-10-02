@@ -1,5 +1,6 @@
 from datetime import datetime
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import StaleElementReferenceException
 import ff
 
 class Tweet():
@@ -35,10 +36,15 @@ class Tweet():
             self.likes = get_likes_element().get_attribute('innerText')
             try:
                 self.likes = int(self.likes)
-            except: pass
-
-    def has_many_likes(self):
-        return not self.liked and (type(self.likes) == str or self.likes > 100)
+            except:                
+                if len(self.likes.strip()) == 0:
+                    self.likes = 0
+                else:
+                    print(self.likes)
+                    unit = self.likes[-1]
+                    self.likes = float(self.likes[:-1])
+                    if unit == 'K': self.likes *= 1000
+                    if unit == 'M': self.likes *= 1_000_000
 
 class Twitter():
 
@@ -84,7 +90,7 @@ class Twitter():
                     else:
                         i += 1
                     self.browser.scroll_to_element(tweets[i].element)
-            except: 
+            except StaleElementReferenceException: 
                 print("Cannot get the tweets properly... retrying")
                 continue
 
