@@ -9,7 +9,7 @@ import argparse
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Retweet a specific page')
-    parser.add_argument('--url_or_file', default='https://twitter.com/shiroihamusan')
+    parser.add_argument('url_or_file', nargs='?', default='https://twitter.com/shiroihamusan')
     parser.add_argument('--max_hours', default=18, type=int)
     parser.add_argument('--min_likes', default=100, type=int)
     parser.add_argument('--posts_to_retweet', default=20, type=int)

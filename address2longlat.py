@@ -3,6 +3,7 @@ import time
 import re
 import sys
 import ff
+import argparse
 
 sys.stdout.reconfigure(encoding='utf-8')
 r = re.compile(r"\/@([\d\.]+),([\d\.]+),([\d]+)z\/")
@@ -23,8 +24,12 @@ def get_long_lat_zoom(driver, address):
     return address, matches.group(1), matches.group(2), matches.group(3)
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Find the GPS info from a list of addresses')
+    parser.add_argument('places_file', nargs='?', default="places.txt")
+    args = parser.parse_args()
+
     with ff.Browser("http://maps.google.com", private=True) as browser:
-        with open("places.txt", newline="", encoding="utf-8") as f:
+        with open(args.places_file, newline="", encoding="utf-8") as f:
             for line in f:
                 address, long, lat, zoom = get_long_lat_zoom(browser.driver, line)
                 print(f"{address}\t{long}\t{lat}\t{zoom}")
