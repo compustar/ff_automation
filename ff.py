@@ -8,8 +8,8 @@ import random
 import time
 
 class Browser:
-    def __init__(self, url=None, private=False, headless=False):
-        firefox_profile = webdriver.FirefoxProfile(r"ff\Data\profile")
+    def __init__(self, url=None, private=False, executable_path=r"ff\App\Firefox64\firefox.exe", profile_path=r"ff\Data\profile", headless=False):
+        firefox_profile = webdriver.FirefoxProfile(profile_path)
         if private:
             firefox_profile.set_preference("browser.privatebrowsing.autostart", True)
 
@@ -17,7 +17,7 @@ class Browser:
         if headless:
             options.headless = True
 
-        binary = FirefoxBinary(r"ff\App\Firefox64\firefox.exe")
+        binary = FirefoxBinary(executable_path)
 
         self.driver = webdriver.Firefox(firefox_profile = firefox_profile, firefox_binary=binary, firefox_options=options)
         if url is not None:
