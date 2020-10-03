@@ -23,8 +23,9 @@ with Browser("https://web.telegram.org/#/im?p=@TwitterHelpBot", executable_path=
     input.send_keys("/task")
     input.send_keys(Keys.ENTER)
     time.sleep(2)
+    browser.wait(By.XPATH, "//button[text()='香港直擊...']")
     browser.driver.find_elements_by_xpath("//button[text()='香港直擊...']")[-1].click()
-    time.sleep(2)
+    time.sleep(5)
     for url in [a.get_attribute('href') for a in browser.driver.find_elements_by_xpath("(//div[@class='im_message_text'])[last()]/a")[:-1]]: 
         url = urllib.parse.unquote(re.search('url=(.+)', url).group(1))
         twitter = Twitter(browser)

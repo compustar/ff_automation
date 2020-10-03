@@ -57,12 +57,16 @@ class Twitter():
         if tweet.retweet_button is not None:
             if not self.browser.is_element_visible_in_viewpoint(tweet.retweet_button):
                 self.browser.scroll_to_element(tweet.element)
+            if not self.browser.is_element_visible_in_viewpoint(tweet.retweet_button):
+                self.browser.scroll_to_element(tweet.retweet_button, -300)
             self.browser.click_and_wait(tweet.retweet_button, 0.5)
             self.confirm_retweet()
 
         if tweet.like_button is not None:
             if not self.browser.is_element_visible_in_viewpoint(tweet.like_button):
                 self.browser.scroll_to_element(tweet.element)
+            if not self.browser.is_element_visible_in_viewpoint(tweet.like_button):
+                self.browser.scroll_to_element(tweet.like_button, -300)
             self.browser.click_and_wait(tweet.like_button, 2)
 
     def confirm_retweet(self):

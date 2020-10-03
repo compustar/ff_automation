@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 from selenium.webdriver.firefox.options import Options
 import random
@@ -31,10 +32,10 @@ class Browser:
 
     def scroll_to_element(self, element, offset=-150):
         if element is not None:
-            self.driver.execute_script(f"arguments[0].scrollIntoView;window.scrollBy(0, {offset});", element)
+            self.driver.execute_script(f"arguments[0].scrollIntoView();window.scrollBy(0, {offset});", element)
 
     def click_and_wait(self, el, delay=1):
-        el.click()
+        ActionChains(self.driver).move_to_element(el).click().perform()
         time.sleep(delay - random.random() * delay / 2)
 
     def scroll_by_pixel(self,  pixel):
