@@ -36,11 +36,12 @@ class Tweet():
             self.likes = get_likes_element().get_attribute('innerText')
             try:
                 self.likes = int(self.likes)
-            except:                
-                if len(self.likes.strip()) == 0:
+            except:
+                if '\n' in self.likes:
+                    self.likes = int(self.likes.split('\n')[-1])
+                elif len(self.likes.strip()) == 0:
                     self.likes = 0
                 else:
-                    print(self.likes)
                     unit = self.likes[-1]
                     self.likes = float(self.likes[:-1])
                     if unit == 'K': self.likes *= 1000
@@ -70,6 +71,7 @@ class Twitter():
             self.browser.click_and_wait(tweet.like_button, 2)
 
     def confirm_retweet(self):
+        self.browser.wait(By.XPATH, "//div[@data-testid='retweetConfirm']")        
         self.browser.click_and_wait(self.driver.find_element_by_xpath("//div[@data-testid='retweetConfirm']"), 0.5)
 
     def get_tweets(self):
