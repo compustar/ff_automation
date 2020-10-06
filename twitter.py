@@ -38,7 +38,7 @@ class Tweet():
                 self.likes = int(self.likes)
             except:
                 if '\n' in self.likes:
-                    self.likes = int(self.likes.split('\n')[-1])
+                    self.likes = float(self.likes.split('\n')[-1])
                 elif len(self.likes.strip()) == 0:
                     self.likes = 0
                 else:
