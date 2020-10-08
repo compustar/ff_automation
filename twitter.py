@@ -1,4 +1,5 @@
 from datetime import datetime
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import StaleElementReferenceException
 import ff
@@ -33,13 +34,11 @@ class Tweet():
             if len(tweet.find_elements_by_xpath(".//div[@data-testid='retweet']")) > 0:
                 self.retweet_button = tweet.find_element_by_xpath(".//div[@data-testid='retweet']")
 
-            self.likes = get_likes_element().get_attribute('innerText')
+            self.likes = get_likes_element().get_attribute('innerText').split('\n')[-1]
             try:
                 self.likes = int(self.likes)
             except:
-                if '\n' in self.likes:
-                    self.likes = float(self.likes.split('\n')[-1])
-                elif len(self.likes.strip()) == 0:
+                if len(self.likes.strip()) == 0:
                     self.likes = 0
                 else:
                     unit = self.likes[-1]
@@ -54,6 +53,8 @@ class Twitter():
         self.driver = browser.driver
 
     def like_and_retweet(self, tweet):
+        builder = ActionChains(self.browser.driver)
+        builder.move_to_element(self.browser.driver.find_element_by_tag_name("header")).perform()
 
         if tweet.retweet_button is not None:
             if not self.browser.is_element_visible_in_viewpoint(tweet.retweet_button):
