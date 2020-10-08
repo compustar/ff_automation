@@ -1,5 +1,5 @@
 from twitter import Twitter
-from ff import Browser
+from ff import init as browser_init
 import argparse
 import re
 import time
@@ -14,11 +14,11 @@ args = parser.parse_args()
 
 regex = re.compile(r"https://(?:www\.)?twitter\.com[^\s]+")
 with open(args.tweet_list, encoding="utf-8") as f:
-    with Browser() as browser:
+    with browser_init() as browser:
         twitter = Twitter(browser)
         for line in f:
             for url in regex.findall(line):
-                browser.driver.get(url)
+                browser.get(url)
                 tweet = next(twitter.get_tweets())
                 twitter.like_and_retweet(tweet)
                 time.sleep(1)

@@ -2,7 +2,6 @@ from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import StaleElementReferenceException
-import ff
 
 class Tweet():
     def __init__(self, tweet):
@@ -50,11 +49,10 @@ class Twitter():
 
     def __init__(self, browser, direct_line=False):
         self.browser = browser
-        self.driver = browser.driver
 
     def like_and_retweet(self, tweet):
-        builder = ActionChains(self.browser.driver)
-        builder.move_to_element(self.browser.driver.find_element_by_tag_name("header")).perform()
+        builder = ActionChains(self.browser)
+        builder.move_to_element(self.browser.find_element_by_tag_name("header")).perform()
 
         if tweet.retweet_button is not None:
             if not self.browser.is_element_visible_in_viewpoint(tweet.retweet_button):
@@ -73,7 +71,7 @@ class Twitter():
 
     def confirm_retweet(self):
         self.browser.wait(By.XPATH, "//div[@data-testid='retweetConfirm']")        
-        self.browser.click_and_wait(self.driver.find_element_by_xpath("//div[@data-testid='retweetConfirm']"), 0.5)
+        self.browser.click_and_wait(self.browser.find_element_by_xpath("//div[@data-testid='retweetConfirm']"), 0.5)
 
     def get_tweets(self):
         prev_first_tweet = None
@@ -84,7 +82,7 @@ class Twitter():
         # infinite scroll
         while True:
             try:
-                tweets = [Tweet(t) for t in self.driver.find_elements_by_xpath("//div[@data-testid='tweet']")]
+                tweets = [Tweet(t) for t in self.browser.find_elements_by_xpath("//div[@data-testid='tweet']")]
                 # tweets got refreshed... find the next tweet
                 if prev_first_tweet != tweets[0].url:
                     prev_first_tweet = tweets[0].url

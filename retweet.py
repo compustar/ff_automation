@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 import os
-from ff import Browser
+from ff import init as browser_init
 from twitter import Twitter
 import argparse
 
@@ -25,10 +25,10 @@ if __name__ == "__main__":
         with open(args.url_or_file, newline="", encoding="utf-8") as f:
             urls = [url.strip() for url in f if len(url.strip()) > 0]
     
-    with Browser(executable_path=args.executable_path, profile_path=args.profile_path, headless=args.headless) as browser:
+    with browser_init(executable_path=args.executable_path, profile_path=args.profile_path, headless=args.headless) as browser:
         twitter = Twitter(browser)
         for url in urls:
-            browser.driver.get(url)
+            browser.get(url)
             time.sleep(5)
 
             visited = {}
