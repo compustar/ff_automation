@@ -3,6 +3,7 @@ from ff import init as browser_init
 import argparse
 import re
 import time
+import utils
 
 parser = argparse.ArgumentParser(description='Retweet all tweets in a file')
 parser.add_argument('tweet_list', nargs='?', default='tweet_list.txt')
@@ -18,7 +19,4 @@ with open(args.tweet_list, encoding="utf-8") as f:
         twitter = Twitter(browser)
         for line in f:
             for url in regex.findall(line):
-                browser.get(url)
-                tweet = next(twitter.get_tweets())
-                twitter.like_and_retweet(tweet)
-                time.sleep(1)
+                utils.tweets(browser, twitter, url)

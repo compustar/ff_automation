@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import re
 import urllib.parse
+import utils
 
 parser = argparse.ArgumentParser(description='Retweet links in twitter helper bot')
 parser.add_argument('--headless', action='store_true', default=False)
@@ -26,10 +27,7 @@ with browser_init("https://web.telegram.org/#/im?p=@TwitterHelpBot", executable_
     browser.wait(By.XPATH, "//button[text()='香港直擊...']")
     browser.find_elements_by_xpath("//button[text()='香港直擊...']")[-1].click()
     time.sleep(5)
+    twitter = Twitter(browser)
     for url in [a.get_attribute('href') for a in browser.find_elements_by_xpath("(//div[@class='im_message_text'])[last()]/a")[:-1]]: 
         url = urllib.parse.unquote(re.search('url=(.+)', url).group(1))
-        twitter = Twitter(browser)
-        browser.get(url)
-        tweet = next(twitter.get_tweets())
-        twitter.like_and_retweet(tweet)
-        time.sleep(1)
+        utils.tweets(browser, twitter, url)
