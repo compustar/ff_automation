@@ -34,7 +34,7 @@ def is_element_visible_in_viewpoint(self, element):
                                 "return false;                            "
                                 , element)
 
-def wait(self, by, p, secs):
+def wait(self, by, p, secs=10):
     return WebDriverWait(self, secs).until(
         EC.presence_of_element_located((by, p))
     )
