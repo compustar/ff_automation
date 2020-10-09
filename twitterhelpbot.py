@@ -11,6 +11,8 @@ import urllib.parse
 import utils
 
 parser = argparse.ArgumentParser(description='Retweet links in twitter helper bot')
+parser.add_argument('--wait', default=10, type=int)
+parser.add_argument('--continuation', action='store_true', default=False)
 parser.add_argument('--headless', action='store_true', default=False)
 parser.add_argument('--executable_path', default=r"ff\App\Firefox64\firefox.exe")
 parser.add_argument('--profile_path', default=r"ff\Data\profile")
@@ -18,7 +20,7 @@ parser.add_argument('--profile_path', default=r"ff\Data\profile")
 args = parser.parse_args()
 
 with browser_init("https://web.telegram.org/#/im?p=@TwitterHelpBot", executable_path=args.executable_path, profile_path=args.profile_path, headless=args.headless) as browser:
-    browser.wait(By.CLASS_NAME, "composer_rich_textarea")
+    browser.wait(By.CLASS_NAME, "im_dialog", args.wait)
     time.sleep(5)
     input = browser.find_element_by_class_name("composer_rich_textarea")
     input.send_keys("/task")
