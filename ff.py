@@ -59,7 +59,7 @@ class Browser:
                                     "return false;                            "
                                     , element)
 
-    def wait(self, by, p):
-        return WebDriverWait(self.driver, 10).until(
+    def wait(self, by, p, secs=10):
+        return WebDriverWait(self.driver, secs).until(
             EC.presence_of_element_located((by, p))
         )
