@@ -15,7 +15,7 @@ args = parser.parse_args()
 
 regex = re.compile(r"https://(?:www\.)?twitter\.com[^\s]+")
 with open(args.tweet_list, encoding="utf-8") as f:
-    with browser_init() as browser:
+    with browser_init(executable_path=args.executable_path, profile_path=args.profile_path, headless=args.headless) as browser:
         twitter = Twitter(browser)
         for line in f:
             for url in regex.findall(line):

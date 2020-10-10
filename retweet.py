@@ -4,6 +4,7 @@ import os
 from ff import init as browser_init
 from twitter import Twitter
 import argparse
+from selenium.webdriver.common.by import By
 
 
 if __name__ == "__main__":
@@ -29,7 +30,7 @@ if __name__ == "__main__":
         twitter = Twitter(browser)
         for url in urls:
             browser.get(url)
-            time.sleep(5)
+            browser.wait(By.XPATH, ".//div[@data-testid='reply']")
 
             visited = {}
             tweeted = 0
