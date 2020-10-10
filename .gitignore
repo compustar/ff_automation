@@ -3,3 +3,5 @@ geckodriver.*
 .vscode/
 __pycache__/
 tweet_list.txt
+build/
+dist/
