@@ -81,24 +81,27 @@ class Twitter():
 
         # infinite scroll
         while True:
-            try:
-                tweets = [Tweet(t) for t in self.browser.find_elements_by_xpath("//div[@data-testid='tweet']")]
-                # tweets got refreshed... find the next tweet
-                if prev_first_tweet != tweets[0].url:
-                    prev_first_tweet = tweets[0].url
-                    for i, t in enumerate(tweets):
-                        if tweets[i].url == prev_tweet:
-                            break
-
-                    if i + 1 == len(tweets):
-                        i = 0
-                    else:
-                        i += 1
-                    self.browser.scroll_to_element(tweets[i].element)
-            except StaleElementReferenceException: 
-                print("Cannot get the tweets properly... retrying")
+            tweets = []
+            for t in self.browser.find_elements_by_xpath("//div[@data-testid='tweet']"):
+                try:
+                    tweets.append(Tweet(t))
+                except: pass
+            
+            if len(tweets) == 0:
                 continue
 
+            # tweets got refreshed... find the next tweet
+            if prev_first_tweet != tweets[0].url:
+                prev_first_tweet = tweets[0].url
+                for i, t in enumerate(tweets):
+                    if tweets[i].url == prev_tweet:
+                        break
+
+                if i + 1 >= len(tweets):
+                    i = 0
+                else:
+                    i += 1
+                self.browser.scroll_to_element(tweets[i].element)
 
             # no scroll no new tweet
             if i >= len(tweets):
